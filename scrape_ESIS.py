@@ -46,7 +46,7 @@ with open(args.esdlist, 'r') as f: #get ESDs from csv file
                 tracker = [] # init a dict for keeping track of changes to the links names
                 for u in unique:
                     img_link = urllib.parse.urljoin(link, u) # constructs the image link url
-                    #print('image link:', img_link)
+                    
                     ### some images are returned via retieving an actual image (i.e. space.gif) while some are retrieved from a database BLOB (i.e. id=####)
                     if u.find('id=') >=0:
                         filename = u[u.find('id=')+3:]
@@ -60,17 +60,15 @@ with open(args.esdlist, 'r') as f: #get ESDs from csv file
                     else:
                         tracker.append({'src': u, 'link': img_link, 'fullpath': os.path.join(args.outpath, esd, filename), 'renamed': False})
 
-                ### scans the downloaded database images with no extension, determines their filetype, and gives them and extenstion.
+                ### scans the downloaded database images with no extension, determines their filetype, and gives them an extenstion.
                 processed = []
                 for t in tracker:
                     fullpath = t.get('fullpath')
                     fname = os.path.basename(fullpath)
                     basedir = os.path.dirname(fullpath)
                     ext = os.path.splitext(fname)[1]
-                    #print('fullpath:', fullpath, 'fname:', fname, 'basedir:', basedir, 'ext:',ext)
                     if not ext:
                         new_ext = imghdr.what(fullpath) #determines pic type
-                        #print('fullpath:', fullpath, 'newext:', new_ext)
                         if new_ext:
                             try:
                                 os.rename(fullpath, '.'.join((fullpath, new_ext))) #renames with proper file extension
@@ -82,17 +80,15 @@ with open(args.esdlist, 'r') as f: #get ESDs from csv file
                                 t['renamed'] = True
                     t['relpath'] = os.path.join('.',os.path.basename(t['fullpath']))
                     processed.append(t)
+                    
                 ### replace html picture path with new pic path            
-                #print('Processing photos...')
                 for p in processed:
-                    #print(p)
                     for i in soup.find_all('img'):
                         if p['src'] == i['src']:
                             i['src'] = p['relpath']
                         
                 with open(os.path.join(args.outpath, esd, '.'.join((esd, 'html'))), 'w') as out:
                     out.write(soup.prettify())
-                    #out.write(str(soup))
             else:
                 print('No data for', esd)
                 with open(os.path.join(args.outpath, esd, '.'.join((esd, 'txt'))), 'w') as out:
