@@ -2,7 +2,9 @@
 The purpose of this script is to download Ecological Site Descriptions (ESDs) from the US Department of Agriculture's (USDA) Ecological Site Information System (ESIS) website.  As of the writing of this, there is no way to directly download these ESDs, which requires the user to visit each URL and print and/or download the ESD's html directly.  This script automates this process.
 
 # Prerequisites/Installation #
-This script is built in python 3.6 and requires the use of the Beautiful Soup library (pip install beautifulsoup4).
+This script is built in python 3.6. 'pip install -r requirements.txt' to isntall requirements.
+Additionally in order to export to pdf the wkhtmltopdf library needs to be installed.
+for instructions on how to get wkhtmltopdf installed on your system please see the Installation section of the [pdfkit](https://github.com/JazzCore/python-pdfkit) repository.
 
 # Use #
 py -3.6 scrape_ESIS.py "path/to/ecosite_list" "directory/to/export/in"
