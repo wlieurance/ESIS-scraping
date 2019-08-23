@@ -124,7 +124,7 @@ def replace_veg_code(con):
     CREATE TABLE subgroup AS
     SELECT site_id, order_1, veg_group, group_concat(accepted_symbol, '-') AS subgroup
       FROM (
-           SELECT a.*, coalesce(b.accepted_symbol, 'UNKN') AS accepted_symbol
+           SELECT a.*, coalesce(b.accepted_symbol, a.sci_name) AS accepted_symbol
              FROM veg_split AS a
              LEFT JOIN (
                   SELECT scientific_name, accepted_symbol 
