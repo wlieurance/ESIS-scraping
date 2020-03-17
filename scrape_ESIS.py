@@ -11,6 +11,15 @@ import http
 import pdfkit
 
 
+def url_encode_non_ascii(b):
+    return b.decode('utf-8')
+
+
+def iri_to_uri(iri):
+    parts = urllib.parse.urlparse(iri)
+    return urllib.parse.urlunparse([url_encode_non_ascii(part.encode('utf-8')) for part in parts])
+
+
 def scrape_esis(esdlist, outdir, exporttype):
     # parts of the download link for NRCS ESIS
     l = ['https://esis.sc.egov.usda.gov', 'ESDReport',
@@ -59,6 +68,8 @@ def scrape_esis(esdlist, outdir, exporttype):
                                 urllib.request.urlretrieve(img_link, os.path.join(outdir, esd, filename))
                             except (urllib.error.HTTPError, http.client.HTTPException):
                                 print('Could not find', img_link)
+                            except UnicodeEncodeError:
+                                print("url or filename for", img_link, "not valid (UnicodeEncodeError)")
                             else:
                                 tracker.append({'src': u, 'link': img_link,
                                                 'fullpath': os.path.join(outdir, esd, filename), 'renamed': False})
@@ -92,7 +103,7 @@ def scrape_esis(esdlist, outdir, exporttype):
                                 if p['src'] == i['src']:
                                     i['src'] = p['relpath']
                         outpath = os.path.join(outdir, esd, '.'.join((esd, 'html')))
-                        with open(outpath, 'w') as out:
+                        with open(outpath, 'w', encoding='utf-8') as out:
                             out.write(soup.prettify())
                     else:
                         print('No data for', esd)
